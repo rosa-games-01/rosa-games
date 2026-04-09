@@ -775,7 +775,12 @@
       "aliases": [],
       "categories": []
     },
-    "Station Saturn": {
+    "Soundboard": {
+            "path": "main/games/soundboard/index.html",
+            "aliases": [sound, soundboard, board],
+            "categories": [prank, sound, meme]
+        },
+        "Station Saturn": {
       "path": "station-saturn",
       "aliases": [],
       "categories": []
