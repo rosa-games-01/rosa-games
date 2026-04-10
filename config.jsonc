@@ -777,8 +777,8 @@
     },
     "Soundboard": {
             "path": "soundboard",
-            "aliases": [sound, soundboard, board],
-            "categories": [prank, sound, meme]
+            "aliases": [],
+            "categories": []
         },
         "Station Saturn": {
       "path": "station-saturn",
