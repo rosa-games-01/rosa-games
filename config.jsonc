@@ -591,7 +591,12 @@
       "aliases": [],
       "categories": []
     },
-    "Planet Life": {
+    "Pizza Tower": {
+            "path": "pizza-tower",
+            "aliases": [],
+            "categories": []
+        },
+        "Planet Life": {
       "path": "planet-life",
       "aliases": [],
       "categories": []
