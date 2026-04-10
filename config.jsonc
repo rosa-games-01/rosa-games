@@ -776,7 +776,7 @@
       "categories": []
     },
     "Soundboard": {
-            "path": "main/games/soundboard/index.html",
+            "path": "soundboard",
             "aliases": [sound, soundboard, board],
             "categories": [prank, sound, meme]
         },
