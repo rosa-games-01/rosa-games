@@ -466,7 +466,12 @@
       "aliases": [],
       "categories": []
     },
-    "Henry Stickmin 0: Breaking The Bank": {
+    "Half Life": {
+            "path": "half-life",
+            "aliases": [],
+            "categories": []
+        },
+        "Henry Stickmin 0: Breaking The Bank": {
       "path": "flash/?game=breaking-the-bank",
       "aliases": [],
       "categories": []
