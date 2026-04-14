@@ -621,7 +621,12 @@
       "aliases": [],
       "categories": []
     },
-    "Pull Of War": {
+    "Proxy": {
+            "path": "proxy",
+            "aliases": [],
+            "categories": []
+        },
+        "Pull Of War": {
       "path": "pull-of-war",
       "aliases": [],
       "categories": []
