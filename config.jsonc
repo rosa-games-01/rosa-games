@@ -117,7 +117,12 @@
       "aliases": [],
       "categories": []
     },
-    "Basket Random": {
+    "Bad Time Simulator": {
+            "path": "bad-time-simulator",
+            "aliases": [],
+            "categories": []
+        },
+        "Basket Random": {
       "path": "basket-random",
       "aliases": [],
       "categories": []
