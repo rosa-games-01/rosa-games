@@ -18,6 +18,11 @@ $('.column button .card').on('click', function () {
         return;
     }
 
+    if (nextMenu === 'news') {
+        window.location.href = 'news/';
+        return;
+    }
+
     currentMenu.fadeOut(300, () => {
         $('.' + nextMenu).fadeIn(200);
     });
