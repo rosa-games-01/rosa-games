@@ -23,6 +23,11 @@ $('.column button .card').on('click', function () {
         return;
     }
 
+    if (nextMenu === 'forum') {
+        window.location.href = 'forum/';
+        return;
+    }
+
     currentMenu.fadeOut(300, () => {
         $('.' + nextMenu).fadeIn(200);
     });

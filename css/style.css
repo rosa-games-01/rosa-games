@@ -79,6 +79,11 @@ body.noscript {
     display: none;
 }
 
+.homepage {
+    overflow-y: auto;
+    max-height: 100vh;
+}
+
 #noscript-text {
     display: block;
     position: absolute;
