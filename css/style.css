@@ -278,6 +278,33 @@ logo img:hover {
     cursor: pointer;
 }
 
+.top-right-auth {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.top-right-auth button {
+    background: #80cbc4;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.top-right-auth button:hover {
+    background: #4db6ac;
+}
+
+.top-right-auth span {
+    color: #dcddde;
+    margin-right: 15px;
+}
+
 img[alt='MonkeyGG2 Icon'] {
     filter: brightness(110%);
 }
