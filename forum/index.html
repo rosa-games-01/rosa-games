@@ -480,6 +480,7 @@
 
     <div class="forum-header">
       <h1>Community Forum</h1>
+      ${currentUser ? '<button class="btn-primary" style="margin-top: 20px;" onclick="toggleCreatePost()">Create New Post</button>' : '<button class="btn-primary" style="margin-top: 20px;" onclick="openAuthModal()">Sign In to Create Post</button>'}
     </div>
 
     <div id="create-post-area" style="display: none;">
@@ -498,11 +499,8 @@
           <input type="file" id="post-attachment" multiple />
         </div>
         <button class="btn-primary" onclick="createPost()">Create Post</button>
+        <button class="btn-primary" style="background: #666; margin-left: 10px;" onclick="toggleCreatePost()">Cancel</button>
       </div>
-    </div>
-
-    <div id="create-post-prompt" style="text-align: center; margin: 20px 0;">
-      <button class="btn-primary" onclick="openAuthModal()">Sign In to Create Post</button>
     </div>
 
     <div id="posts-container" class="posts-section"></div>
@@ -552,6 +550,7 @@
           <label>Confirm Password</label>
           <input type="password" id="register-confirm-password" placeholder="Confirm password" />
         </div>
+        <p style="font-size: 0.9rem; color: #ccc; margin: 10px 0;">Note: It may take a minute or two to be able to sign in after creating your account.</p>
         <button class="btn-primary" style="width: 100%;" onclick="register()">Create Account</button>
       </div>
     </div>
@@ -567,7 +566,7 @@
 
   <script>
     // JSONBin configuration
-    const API_KEY = '$2a$10$KQGNonp3GHvHkZHM77tfD.VklK/1pxWWKpMTP3He/P9bKhQQVQAnm';
+    const API_KEY = '69f24b6110716a4d5de6020b';
     const BIN_ID = '69f24dd036566621a807ebb6';
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
@@ -585,23 +584,24 @@
       const container = document.getElementById('posts-container');
       container.innerHTML = '<div class="loading">Loading forum...</div>';
 
-      if (API_KEY === '$2a$10$KQGNonp3GHvHkZHM77tfD.VklK/1pxWWKpMTP3He/P9bKhQQVQAnm' && BIN_ID === '69f24dd036566621a807ebb6') {
-        fetch(API_URL, { headers: { 'X-Master-Key': API_KEY } })
-          .then(res => res.json())
-          .then(data => {
-            allUsers = data.record.users || [];
-            allPosts = data.record.posts || [];
-            loadUser();
-            updateForumUI();
-            displayPosts();
-          })
-          .catch(err => {
-            console.error('Error loading forum data:', err);
-            container.innerHTML = '<div class="no-posts">Error loading forum. Please check your JSONBin API configuration.</div>';
-          });
-      } else {
-        container.innerHTML = '<div class="no-posts">Forum not configured. Please set API_KEY and BIN_ID.</div>';
+      if (API_KEY === 'YOUR_API_KEY_HERE' || BIN_ID === 'YOUR_BIN_ID_HERE') {
+        container.innerHTML = '<div class="no-posts">Forum not configured. Please set your JSONBin API_KEY and BIN_ID in the code.</div>';
+        return;
       }
+
+      fetch(API_URL, { headers: { 'X-Master-Key': API_KEY } })
+        .then(res => res.json())
+        .then(data => {
+          allUsers = data.record.users || [];
+          allPosts = data.record.posts || [];
+          loadUser();
+          updateForumUI();
+          displayPosts();
+        })
+        .catch(err => {
+          console.error('Error loading forum data:', err);
+          container.innerHTML = '<div class="no-posts">Error loading forum. Please check your JSONBin API configuration.</div>';
+        });
     }
 
     function saveForumData() {
@@ -630,15 +630,20 @@
     }
 
     function updateForumUI() {
-      const createPostArea = document.getElementById('create-post-area');
-      const createPostPrompt = document.getElementById('create-post-prompt');
+      // Update the header button
+      const header = document.querySelector('.forum-header');
+      header.innerHTML = `
+        <h1>Community Forum</h1>
+        ${currentUser ? '<button class="btn-primary" style="margin-top: 20px;" onclick="toggleCreatePost()">Create New Post</button>' : '<button class="btn-primary" style="margin-top: 20px;" onclick="openAuthModal()">Sign In to Create Post</button>'}
+      `;
+    }
 
-      if (currentUser) {
-        createPostArea.style.display = 'block';
-        createPostPrompt.style.display = 'none';
+    function toggleCreatePost() {
+      const createArea = document.getElementById('create-post-area');
+      if (createArea.style.display === 'block') {
+        createArea.style.display = 'none';
       } else {
-        createPostArea.style.display = 'none';
-        createPostPrompt.style.display = 'block';
+        createArea.style.display = 'block';
       }
     }
 
