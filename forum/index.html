@@ -27,13 +27,30 @@
     }
 
     .forum-header {
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 40px;
     }
 
     .forum-header h1 {
+      margin: 0;
       font-size: 3rem;
-      margin: 0 0 10px 0;
+    }
+
+    .create-post-btn {
+      background: #80cbc4;
+      color: #000;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .create-post-btn:hover {
+      background: #4db6ac;
     }
 
     .create-post-section {
@@ -79,6 +96,26 @@
       color: #f5f5f5;
     }
 
+    .formatting-toolbar {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 5px;
+    }
+
+    .format-btn {
+      background: #555;
+      color: #f5f5f5;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .format-btn:hover {
+      background: #666;
+    }
+
     .btn-primary {
       background: #80cbc4;
       color: #000;
@@ -116,6 +153,18 @@
     .post-card:hover {
       border-color: #80cbc4;
       transform: translateY(-2px);
+    }
+
+    .post-display-file {
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .post-display-file img,
+    .post-display-file video {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 4px;
     }
 
     .post-header {
@@ -480,26 +529,40 @@
 
     <div class="forum-header">
       <h1>Community Forum</h1>
-      ${currentUser ? '<button class="btn-primary" style="margin-top: 20px;" onclick="toggleCreatePost()">Create New Post</button>' : '<button class="btn-primary" style="margin-top: 20px;" onclick="openAuthModal()">Sign In to Create Post</button>'}
+      <button class="create-post-btn" onclick="openCreatePost()" style="display: none;" id="create-post-btn">Create Post</button>
     </div>
 
     <div id="create-post-area" style="display: none;">
       <div class="create-post-section">
         <h2>Create a New Post</h2>
         <div class="form-group">
+          <label>Display File (Image/Video)</label>
+          <input type="file" id="post-display-file" accept="image/*,video/*" />
+        </div>
+        <div class="form-group">
           <label>Post Title</label>
+          <div class="formatting-toolbar">
+            <button class="format-btn" onclick="formatText('title', '**', '**')">Bold</button>
+            <button class="format-btn" onclick="formatText('title', '*', '*')">Italic</button>
+            <button class="format-btn" onclick="formatText('title', '<u>', '</u>')">Underline</button>
+          </div>
           <input type="text" id="post-title" placeholder="Enter post title" />
         </div>
         <div class="form-group">
           <label>Post Content</label>
+          <div class="formatting-toolbar">
+            <button class="format-btn" onclick="formatText('content', '**', '**')">Bold</button>
+            <button class="format-btn" onclick="formatText('content', '*', '*')">Italic</button>
+            <button class="format-btn" onclick="formatText('content', '<u>', '</u>')">Underline</button>
+          </div>
           <textarea id="post-content" placeholder="Write your post content here..."></textarea>
         </div>
         <div class="form-group">
-          <label>Attach Files (Images, PDFs, Documents, etc.)</label>
+          <label>Attach Additional Files</label>
           <input type="file" id="post-attachment" multiple />
         </div>
         <button class="btn-primary" onclick="createPost()">Create Post</button>
-        <button class="btn-primary" style="background: #666; margin-left: 10px;" onclick="toggleCreatePost()">Cancel</button>
+        <button class="btn-primary" style="background: #666; margin-left: 10px;" onclick="closeCreatePost()">Cancel</button>
       </div>
     </div>
 
@@ -584,11 +647,6 @@
       const container = document.getElementById('posts-container');
       container.innerHTML = '<div class="loading">Loading forum...</div>';
 
-      if (API_KEY === 'YOUR_API_KEY_HERE' || BIN_ID === 'YOUR_BIN_ID_HERE') {
-        container.innerHTML = '<div class="no-posts">Forum not configured. Please set your JSONBin API_KEY and BIN_ID in the code.</div>';
-        return;
-      }
-
       fetch(API_URL, { headers: { 'X-Master-Key': API_KEY } })
         .then(res => res.json())
         .then(data => {
@@ -630,21 +688,26 @@
     }
 
     function updateForumUI() {
-      // Update the header button
-      const header = document.querySelector('.forum-header');
-      header.innerHTML = `
-        <h1>Community Forum</h1>
-        ${currentUser ? '<button class="btn-primary" style="margin-top: 20px;" onclick="toggleCreatePost()">Create New Post</button>' : '<button class="btn-primary" style="margin-top: 20px;" onclick="openAuthModal()">Sign In to Create Post</button>'}
-      `;
+      const createBtn = document.getElementById('create-post-btn');
+      if (currentUser) {
+        createBtn.style.display = 'block';
+      } else {
+        createBtn.style.display = 'none';
+      }
     }
 
-    function toggleCreatePost() {
-      const createArea = document.getElementById('create-post-area');
-      if (createArea.style.display === 'block') {
-        createArea.style.display = 'none';
-      } else {
-        createArea.style.display = 'block';
+    function openCreatePost() {
+      if (!currentUser) {
+        openAuthModal();
+        return;
       }
+      document.getElementById('create-post-area').style.display = 'block';
+      document.getElementById('create-post-btn').style.display = 'none';
+    }
+
+    function closeCreatePost() {
+      document.getElementById('create-post-area').style.display = 'none';
+      document.getElementById('create-post-btn').style.display = currentUser ? 'block' : 'none';
     }
 
     function openAuthModal() {
@@ -755,8 +818,18 @@
         const isOwnPost = currentUser && currentUser.username === post.author.username;
         const preview = post.content.substring(0, 100) + (post.content.length > 100 ? '...' : '');
 
+        let displayFileHtml = '';
+        if (post.displayFile) {
+          if (post.displayFile.type.startsWith('image/')) {
+            displayFileHtml = `<div class="post-display-file"><img src="${post.displayFile.data}" alt="${post.displayFile.name}" /></div>`;
+          } else if (post.displayFile.type.startsWith('video/')) {
+            displayFileHtml = `<div class="post-display-file"><video controls><source src="${post.displayFile.data}" type="${post.displayFile.type}"></video></div>`;
+          }
+        }
+
         return `
           <div class="post-card" onclick="openPostDetail(${index})">
+            ${displayFileHtml}
             <div class="post-header">
               <div class="post-author">
                 <div class="post-avatar">${post.author.avatar}</div>
@@ -786,6 +859,7 @@
 
       const title = document.getElementById('post-title').value.trim();
       const content = document.getElementById('post-content').value.trim();
+      const displayFileInput = document.getElementById('post-display-file');
       const fileInput = document.getElementById('post-attachment');
 
       if (!title || !content) {
@@ -797,13 +871,37 @@
         author: currentUser,
         title,
         content,
+        displayFile: null,
         attachments: [],
         comments: [],
         timestamp: Date.now()
       };
 
+      let filesToProcess = 0;
+      let filesProcessed = 0;
+
+      // Handle display file
+      if (displayFileInput.files.length > 0) {
+        filesToProcess++;
+        const file = displayFileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          post.displayFile = {
+            name: file.name,
+            type: file.type,
+            data: e.target.result
+          };
+          filesProcessed++;
+          if (filesProcessed === filesToProcess) {
+            savePost(post);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // Handle attachments
       if (fileInput.files.length > 0) {
-        let filesProcessed = 0;
+        filesToProcess += fileInput.files.length;
         Array.from(fileInput.files).forEach(file => {
           const reader = new FileReader();
           reader.onload = function(e) {
@@ -813,13 +911,15 @@
               data: e.target.result
             });
             filesProcessed++;
-            if (filesProcessed === fileInput.files.length) {
+            if (filesProcessed === filesToProcess) {
               savePost(post);
             }
           };
           reader.readAsDataURL(file);
         });
-      } else {
+      }
+
+      if (filesToProcess === 0) {
         savePost(post);
       }
     }
@@ -829,7 +929,9 @@
       saveForumData();
       document.getElementById('post-title').value = '';
       document.getElementById('post-content').value = '';
+      document.getElementById('post-display-file').value = '';
       document.getElementById('post-attachment').value = '';
+      closeCreatePost();
       displayPosts();
     }
 
@@ -847,6 +949,15 @@
       const modal = document.getElementById('post-detail-modal');
       const content = document.getElementById('post-detail-content');
 
+      let displayFileHtml = '';
+      if (post.displayFile) {
+        if (post.displayFile.type.startsWith('image/')) {
+          displayFileHtml = `<div class="post-display-file"><img src="${post.displayFile.data}" alt="${post.displayFile.name}" /></div>`;
+        } else if (post.displayFile.type.startsWith('video/')) {
+          displayFileHtml = `<div class="post-display-file"><video controls><source src="${post.displayFile.data}" type="${post.displayFile.type}"></video></div>`;
+        }
+      }
+
       let attachmentsHtml = '';
       if (post.attachments && post.attachments.length > 0) {
         attachmentsHtml = '<div class="attachment"><h4>Attachments:</h4>';
@@ -863,6 +974,7 @@
       const isOwnPost = currentUser && currentUser.username === post.author.username;
 
       content.innerHTML = `
+        ${displayFileHtml}
         <div class="post-header">
           <div class="post-author">
             <div class="post-avatar">${post.author.avatar}</div>
@@ -1023,6 +1135,20 @@
       openPostDetail(postIndex);
     }
 
+    function formatText(field, startTag, endTag) {
+      const element = document.getElementById('post-' + field);
+      const start = element.selectionStart;
+      const end = element.selectionEnd;
+      const text = element.value;
+      const before = text.substring(0, start);
+      const selection = text.substring(start, end);
+      const after = text.substring(end);
+
+      element.value = before + startTag + selection + endTag + after;
+      element.focus();
+      element.setSelectionRange(start + startTag.length, end + startTag.length);
+    }
+
     // ===== UTILITY FUNCTIONS =====
     function formatDate(timestamp) {
       const date = new Date(timestamp);
@@ -1039,358 +1165,6 @@
       };
       return text.replace(/[&<>"']/g, m => map[m]);
     }
-  </script>
-</body>
-
-</html><!doctype html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="shortcut icon" href="/favicon.png" />
-  <title>Forum</title>
-  <link rel="stylesheet" href="/css/style.css" />
-  <style>
-    body {
-      background: #121212;
-      color: #f5f5f5;
-      font-family: Arial, Helvetica, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    .forum-wrap {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-
-    .forum-wrap h1 {
-      font-size: 3rem;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .post-form {
-      background: #2b2b2b;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 30px;
-    }
-
-    .post-form input,
-    .post-form textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #555;
-      border-radius: 4px;
-      background: #1e1e1e;
-      color: #f5f5f5;
-      font-size: 1rem;
-    }
-
-    .post-form button {
-      background: #80cbc4;
-      color: #000;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    .post-form button:hover {
-      background: #4db6ac;
-    }
-
-    .posts {
-      margin-top: 30px;
-    }
-
-    .post {
-      background: #2b2b2b;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-
-    .post-title {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-    }
-
-    .post-content {
-      font-size: 1rem;
-      line-height: 1.6;
-      margin-bottom: 15px;
-    }
-
-    .post-attachments {
-      margin-bottom: 15px;
-    }
-
-    .post-attachments img,
-    .post-attachments a {
-      display: block;
-      margin: 5px 0;
-    }
-
-    .post-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .like-btn,
-    .dislike-btn {
-      background: #555;
-      color: #f5f5f5;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .like-btn:hover {
-      background: #4caf50;
-    }
-
-    .dislike-btn:hover {
-      background: #f44336;
-    }
-
-    .back-link {
-      display: inline-block;
-      margin-top: 30px;
-      color: #80cbc4;
-      text-decoration: none;
-      border: 1px solid rgba(128, 203, 196, 0.5);
-      padding: 10px 18px;
-      border-radius: 8px;
-    }
-
-    .back-link:hover {
-      border-color: #80cbc4;
-      color: #ffffff;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="forum-wrap">
-    <h1>Community Forum</h1>
-
-    <div class="post-form">
-      <input type="text" id="post-title" placeholder="Post Title" required />
-      <textarea id="post-content" placeholder="Post Content" rows="5" required></textarea>
-      <input type="file" id="post-attachment" multiple accept="image/*, .pdf, .doc, .docx, .txt" />
-      <button onclick="createPost()">Create Post</button>
-    </div>
-
-    <div class="posts" id="posts-container">
-      <!-- Posts will be loaded here -->
-    </div>
-
-    <a class="back-link" href="/rosa-games">Back to Home</a>
-  </div>
-
-  <script>
-    // Replace these with your actual JSONBin credentials
-    const API_KEY = '$2a$10$KQGNonp3GHvHkZHM77tfD.VklK/1pxWWKpMTP3He/P9bKhQQVQAnm';
-    const BIN_ID = '69f24dd036566621a807ebb6';
-    const API_URL = `https://api.jsonbin.io/v3/b/69f24dd036566621a807ebb6`;
-
-    // Initial data for JSONBin (object with empty posts array)
-    // Copy this and paste it when creating your bin:
-    // {"posts": []}
-
-    function loadPosts() {
-      // Fetch posts from JSONBin
-      fetch(API_URL, { 
-        headers: { 'X-Master-Key': API_KEY } 
-      })
-      .then(res => res.json())
-      .then(data => {
-        const posts = data.record.posts || [];
-        displayPosts(posts);
-      })
-      .catch(err => {
-        console.error('Error loading posts:', err);
-        // Fallback to localStorage if API fails
-        const posts = JSON.parse(localStorage.getItem('forumPosts')) || [];
-        displayPosts(posts);
-      });
-    }
-
-    function displayPosts(posts) {
-      const container = document.getElementById('posts-container');
-      container.innerHTML = '';
-
-      posts.forEach((post, index) => {
-        const postDiv = document.createElement('div');
-        postDiv.className = 'post';
-
-        let attachmentsHtml = '';
-        if (post.attachments && post.attachments.length > 0) {
-          attachmentsHtml = '<div class="post-attachments">';
-          post.attachments.forEach(att => {
-            if (att.type.startsWith('image/')) {
-              attachmentsHtml += `<img src="${att.data}" alt="${att.name}" style="max-width: 300px;" />`;
-            } else {
-              attachmentsHtml += `<a href="${att.data}" download="${att.name}">${att.name}</a>`;
-            }
-          });
-          attachmentsHtml += '</div>';
-        }
-
-        postDiv.innerHTML = `
-          <div class="post-title">${post.title}</div>
-          <div class="post-content">${post.content}</div>
-          ${attachmentsHtml}
-          <div class="post-actions">
-            <button class="like-btn" onclick="likePost(${index})">👍 ${post.likes || 0}</button>
-            <button class="dislike-btn" onclick="dislikePost(${index})">👎 ${post.dislikes || 0}</button>
-          </div>
-        `;
-
-        container.appendChild(postDiv);
-      });
-    }
-
-    function createPost() {
-      const title = document.getElementById('post-title').value.trim();
-      const content = document.getElementById('post-content').value.trim();
-      const fileInput = document.getElementById('post-attachment');
-
-      if (!title || !content) {
-        alert('Please fill in title and content');
-        return;
-      }
-
-      const post = {
-        title,
-        content,
-        attachments: [],
-        likes: 0,
-        dislikes: 0,
-        timestamp: Date.now()
-      };
-
-      if (fileInput.files.length > 0) {
-        Array.from(fileInput.files).forEach(file => {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            post.attachments.push({
-              name: file.name,
-              type: file.type,
-              data: e.target.result
-            });
-            if (post.attachments.length === fileInput.files.length) {
-              savePost(post);
-            }
-          };
-          reader.readAsDataURL(file);
-        });
-      } else {
-        savePost(post);
-      }
-    }
-
-    function savePost(post) {
-      // Get current posts
-      fetch(API_URL, { headers: { 'X-Master-Key': API_KEY } })
-      .then(res => res.json())
-      .then(data => {
-        const posts = data.record.posts || [];
-        posts.unshift(post);
-        
-        // Save back to JSONBin
-        return fetch(API_URL, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': API_KEY
-          },
-          body: JSON.stringify({posts: posts})
-        });
-      })
-      .then(() => {
-        loadPosts();
-        // Clear form
-        document.getElementById('post-title').value = '';
-        document.getElementById('post-content').value = '';
-        document.getElementById('post-attachment').value = '';
-      })
-      .catch(err => {
-        console.error('Error saving post:', err);
-        // Fallback to localStorage
-        const posts = JSON.parse(localStorage.getItem('forumPosts')) || [];
-        posts.unshift(post);
-        localStorage.setItem('forumPosts', JSON.stringify(posts));
-        loadPosts();
-        document.getElementById('post-title').value = '';
-        document.getElementById('post-content').value = '';
-        document.getElementById('post-attachment').value = '';
-      });
-    }
-
-    function likePost(index) {
-      fetch(API_URL, { headers: { 'X-Master-Key': API_KEY } })
-      .then(res => res.json())
-      .then(data => {
-        const posts = data.record.posts || [];
-        posts[index].likes = (posts[index].likes || 0) + 1;
-        
-        return fetch(API_URL, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': API_KEY
-          },
-          body: JSON.stringify({posts: posts})
-        });
-      })
-      .then(() => loadPosts())
-      .catch(err => {
-        console.error('Error liking post:', err);
-        // Fallback
-        const posts = JSON.parse(localStorage.getItem('forumPosts')) || [];
-        posts[index].likes = (posts[index].likes || 0) + 1;
-        localStorage.setItem('forumPosts', JSON.stringify(posts));
-        loadPosts();
-      });
-    }
-
-    function dislikePost(index) {
-      fetch(API_URL, { headers: { 'X-Master-Key': API_KEY } })
-      .then(res => res.json())
-      .then(data => {
-        const posts = data.record.posts || [];
-        posts[index].dislikes = (posts[index].dislikes || 0) + 1;
-        
-        return fetch(API_URL, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': API_KEY
-          },
-          body: JSON.stringify({posts: posts})
-        });
-      })
-      .then(() => loadPosts())
-      .catch(err => {
-        console.error('Error disliking post:', err);
-        // Fallback
-        const posts = JSON.parse(localStorage.getItem('forumPosts')) || [];
-        posts[index].dislikes = (posts[index].dislikes || 0) + 1;
-        localStorage.setItem('forumPosts', JSON.stringify(posts));
-        loadPosts();
-      });
-    }
-
-    // Load posts on page load
-    loadPosts();
   </script>
 </body>
 
