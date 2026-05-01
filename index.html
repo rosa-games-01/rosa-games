@@ -26,6 +26,211 @@
   <!-- now loading css -->
   <link href="css/loading.css" rel="stylesheet" type="text/css" />
   <link href="css/style.css" rel="stylesheet" type="text/css" />
+  <style>
+    .main-auth-section {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .auth-btn {
+      background: #80cbc4;
+      color: #000;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .auth-btn:hover {
+      background: #4db6ac;
+    }
+
+    .user-profile-circle {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #80cbc4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: bold;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(128, 203, 196, 0.3);
+    }
+
+    .user-profile-circle:hover {
+      background: #4db6ac;
+      box-shadow: 0 4px 12px rgba(128, 203, 196, 0.5);
+      transform: scale(1.05);
+    }
+
+    .profile-menu {
+      position: absolute;
+      bottom: 60px;
+      right: 0;
+      background: #2b2b2b;
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 10px 0;
+      min-width: 150px;
+      display: none;
+      z-index: 1001;
+    }
+
+    .profile-menu.active {
+      display: block;
+    }
+
+    .profile-menu button {
+      display: block;
+      width: 100%;
+      padding: 10px 15px;
+      background: none;
+      border: none;
+      color: #f5f5f5;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .profile-menu button:hover {
+      background: #3a3a3a;
+      color: #80cbc4;
+    }
+
+    .main-auth-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .main-auth-modal.active {
+      display: flex;
+    }
+
+    .main-modal-content {
+      background: #2b2b2b;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+    }
+
+    .main-auth-modal-content {
+      max-width: 400px;
+    }
+
+    .main-close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: #f5f5f5;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    .main-close-btn:hover {
+      color: #80cbc4;
+    }
+
+    .main-auth-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 20px;
+    }
+
+    .main-auth-tab {
+      flex: 1;
+      padding: 10px;
+      background: #1e1e1e;
+      border: none;
+      color: #f5f5f5;
+      cursor: pointer;
+      font-size: 1rem;
+      border-bottom: 3px solid transparent;
+    }
+
+    .main-auth-tab.active {
+      border-bottom-color: #80cbc4;
+      background: #121212;
+    }
+
+    .main-auth-tab-content {
+      display: none;
+    }
+
+    .main-auth-tab-content.active {
+      display: block;
+    }
+
+    .main-form-group {
+      margin: 15px 0;
+    }
+
+    .main-form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #f5f5f5;
+    }
+
+    .main-form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 4px;
+      background: #1e1e1e;
+      color: #f5f5f5;
+      font-size: 1rem;
+    }
+
+    .main-btn-primary {
+      background: #80cbc4;
+      color: #000;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .main-btn-primary:hover {
+      background: #4db6ac;
+    }
+
+    .main-error-msg {
+      background: #f44336;
+      color: white;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
@@ -76,13 +281,17 @@
     <logo>
       <img src="imgs/icon-256-256.png" alt="MonkeyGG2 Icon" />
     </logo>
-    <div id="auth-button" class="top-right-auth">
-      <button onclick="openAuthModal()">Sign In / Register</button>
+    
+    <!-- Bottom Right Auth Section -->
+    <div id="main-auth-section" class="main-auth-section">
+      <button class="auth-btn" id="main-auth-btn" onclick="openAuthModal()">Sign In</button>
+      <div class="profile-menu" id="main-profile-menu">
+        <button onclick="mainGoToForum()">Go to Forum</button>
+        <button onclick="mainLogout()">Logout</button>
+      </div>
+      <div class="user-profile-circle" id="main-user-circle" onclick="mainToggleProfileMenu()" style="display:none;"></div>
     </div>
-    <div id="user-profile" class="top-right-auth" style="display:none;">
-      <span id="username-display"></span>
-      <button onclick="logout()">Logout</button>
-    </div>
+    
     <div id="particles"></div>
     <dialog id="disabled">
       <div>This feature has been disabled by whoever is hosting this MonkeyGG2 instance.</div>
@@ -458,6 +667,56 @@
       </div>
     </div>
   </section>
+  
+  <!-- Auth Modal -->
+  <div id="main-auth-modal" class="main-auth-modal">
+    <div class="main-modal-content main-auth-modal-content">
+      <button class="main-close-btn" onclick="closeMainAuthModal()">&times;</button>
+      <h2 style="margin-top: 0;">Sign In or Register</h2>
+
+      <div class="main-auth-tabs">
+        <button class="main-auth-tab active" onclick="mainSwitchAuthTab('signin')">Sign In</button>
+        <button class="main-auth-tab" onclick="mainSwitchAuthTab('register')">Register</button>
+      </div>
+
+      <!-- Sign In Tab -->
+      <div id="main-signin-tab" class="main-auth-tab-content active">
+        <div class="main-error-msg" id="main-signin-error"></div>
+        <div class="main-form-group">
+          <label>Username</label>
+          <input type="text" id="main-signin-username" placeholder="Enter your username" />
+        </div>
+        <div class="main-form-group">
+          <label>Password</label>
+          <input type="password" id="main-signin-password" placeholder="Enter your password" />
+        </div>
+        <button class="main-btn-primary" style="width: 100%;" onclick="mainSignIn()">Sign In</button>
+      </div>
+
+      <!-- Register Tab -->
+      <div id="main-register-tab" class="main-auth-tab-content">
+        <div class="main-error-msg" id="main-register-error"></div>
+        <div class="main-form-group">
+          <label>Display Name</label>
+          <input type="text" id="main-register-display-name" placeholder="Your display name" />
+        </div>
+        <div class="main-form-group">
+          <label>Username</label>
+          <input type="text" id="main-register-username" placeholder="Choose a username (no spaces)" />
+        </div>
+        <div class="main-form-group">
+          <label>Password</label>
+          <input type="password" id="main-register-password" placeholder="Choose a password" />
+        </div>
+        <div class="main-form-group">
+          <label>Confirm Password</label>
+          <input type="password" id="main-register-confirm-password" placeholder="Confirm password" />
+        </div>
+        <button class="main-btn-primary" style="width: 100%;" onclick="mainRegister()">Create Account</button>
+      </div>
+    </div>
+  </div>
+
   <section id="page-loader">
     <iframe></iframe>
     <button id="gameButton" class="in-game-button">
@@ -486,6 +745,217 @@
   <script src="js/loading.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/p5@1.8.0/lib/p5.min.js" defer></script>
   <script src="js/bg.js" defer></script>
+  
+  <!-- Auth Management Script -->
+  <script>
+    const SESSION_TIMEOUT = 20 * 60 * 1000; // 20 minutes in milliseconds
+    const API_KEY = '69f24b6110716a4d5de6020b';
+    const BIN_ID = '69f24dd036566621a807ebb6';
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+    let mainCurrentUser = null;
+    let mainAllUsers = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      mainValidateSession();
+      mainUpdateUI();
+      
+      // Close profile menu when clicking outside
+      document.addEventListener('click', (e) => {
+        const menu = document.getElementById('main-profile-menu');
+        const circle = document.getElementById('main-user-circle');
+        if (menu && !menu.contains(e.target) && !circle.contains(e.target)) {
+          mainCloseProfileMenu();
+        }
+      });
+    });
+
+    function mainValidateSession() {
+      const sessionStr = localStorage.getItem('forumSession');
+      if (sessionStr) {
+        try {
+          const session = JSON.parse(sessionStr);
+          if (Date.now() - session.timestamp > SESSION_TIMEOUT) {
+            // Session expired
+            localStorage.removeItem('forumUser');
+            localStorage.removeItem('forumSession');
+            mainCurrentUser = null;
+          } else {
+            const userStr = localStorage.getItem('forumUser');
+            if (userStr) {
+              mainCurrentUser = JSON.parse(userStr);
+            }
+          }
+        } catch (e) {
+          localStorage.removeItem('forumSession');
+        }
+      }
+    }
+
+    function mainLoadUsers() {
+      return fetch(API_URL, { headers: { 'X-Master-Key': API_KEY } })
+        .then(res => res.json())
+        .then(data => {
+          mainAllUsers = data.record.users || [];
+        })
+        .catch(err => {
+          console.error('Error loading users:', err);
+          alert('Error loading user data. Using local cache.');
+        });
+    }
+
+    function mainSaveUsers() {
+      const data = { users: mainAllUsers, posts: [] };
+      fetch(API_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': API_KEY
+        },
+        body: JSON.stringify(data)
+      })
+      .catch(err => console.error('Error saving users:', err));
+    }
+
+    function mainUpdateUI() {
+      const authBtn = document.getElementById('main-auth-btn');
+      const userCircle = document.getElementById('main-user-circle');
+
+      if (mainCurrentUser) {
+        authBtn.style.display = 'none';
+        userCircle.style.display = 'flex';
+        userCircle.textContent = mainCurrentUser.displayName.charAt(0).toUpperCase();
+        userCircle.title = mainCurrentUser.displayName;
+      } else {
+        authBtn.style.display = 'block';
+        userCircle.style.display = 'none';
+      }
+    }
+
+    function openAuthModal() {
+      document.getElementById('main-auth-modal').classList.add('active');
+      document.getElementById('main-signin-username').value = '';
+      document.getElementById('main-signin-password').value = '';
+      document.getElementById('main-register-display-name').value = '';
+      document.getElementById('main-register-username').value = '';
+      document.getElementById('main-register-password').value = '';
+      document.getElementById('main-register-confirm-password').value = '';
+    }
+
+    function closeMainAuthModal() {
+      document.getElementById('main-auth-modal').classList.remove('active');
+    }
+
+    function mainSwitchAuthTab(tab) {
+      document.querySelectorAll('.main-auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.main-auth-tab-content').forEach(c => c.classList.remove('active'));
+
+      event.target.classList.add('active');
+      document.getElementById('main-' + tab + '-tab').classList.add('active');
+
+      document.getElementById('main-signin-error').style.display = 'none';
+      document.getElementById('main-register-error').style.display = 'none';
+    }
+
+    function mainSignIn() {
+      const username = document.getElementById('main-signin-username').value.trim();
+      const password = document.getElementById('main-signin-password').value;
+      const errorDiv = document.getElementById('main-signin-error');
+
+      if (!username || !password) {
+        errorDiv.textContent = 'Please fill in all fields';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      mainLoadUsers().then(() => {
+        const user = mainAllUsers.find(u => u.username === username);
+        if (!user || user.password !== password) {
+          errorDiv.textContent = 'Invalid username or password';
+          errorDiv.style.display = 'block';
+          return;
+        }
+
+        mainCurrentUser = user;
+        localStorage.setItem('forumUser', JSON.stringify(user));
+        localStorage.setItem('forumSession', JSON.stringify({ timestamp: Date.now() }));
+        mainUpdateUI();
+        closeMainAuthModal();
+      });
+    }
+
+    function mainRegister() {
+      const displayName = document.getElementById('main-register-display-name').value.trim();
+      const username = document.getElementById('main-register-username').value.trim();
+      const password = document.getElementById('main-register-password').value;
+      const confirmPassword = document.getElementById('main-register-confirm-password').value;
+      const errorDiv = document.getElementById('main-register-error');
+
+      if (!displayName || !username || !password) {
+        errorDiv.textContent = 'Please fill in all fields';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (username.includes(' ')) {
+        errorDiv.textContent = 'Username cannot contain spaces';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        errorDiv.textContent = 'Passwords do not match';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      mainLoadUsers().then(() => {
+        if (mainAllUsers.find(u => u.username === username)) {
+          errorDiv.textContent = 'Username already exists';
+          errorDiv.style.display = 'block';
+          return;
+        }
+
+        const newUser = {
+          username,
+          displayName,
+          password,
+          avatar: displayName.charAt(0).toUpperCase()
+        };
+
+        mainAllUsers.push(newUser);
+        mainSaveUsers();
+        mainCurrentUser = newUser;
+        localStorage.setItem('forumUser', JSON.stringify(newUser));
+        localStorage.setItem('forumSession', JSON.stringify({ timestamp: Date.now() }));
+        mainUpdateUI();
+        closeMainAuthModal();
+      });
+    }
+
+    function mainToggleProfileMenu() {
+      const menu = document.getElementById('main-profile-menu');
+      menu.classList.toggle('active');
+    }
+
+    function mainCloseProfileMenu() {
+      const menu = document.getElementById('main-profile-menu');
+      menu.classList.remove('active');
+    }
+
+    function mainGoToForum() {
+      window.location.href = '/rosa-games/forum';
+    }
+
+    function mainLogout() {
+      localStorage.removeItem('forumUser');
+      localStorage.removeItem('forumSession');
+      mainCurrentUser = null;
+      mainCloseProfileMenu();
+      mainUpdateUI();
+    }
+  </script>
+  
   <script src="js/index.js" defer></script>
 </body>
 
