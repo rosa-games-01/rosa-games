@@ -725,7 +725,6 @@
     const API_KEY = '$2a$10$KQGNonp3GHvHkZHM77tfD.VklK/1pxWWKpMTP3He/P9bKhQQVQAnm';
     const BIN_ID = '69f24dd036566621a807ebb6';
     const API_URL = BIN_ID ? `https://api.jsonbin.io/v3/b/${BIN_ID}` : '';
-    const SESSION_TIMEOUT = 20 * 60 * 1000; // 20 minutes in milliseconds
 
     let currentUser = null;
     let allPosts = [];
@@ -733,7 +732,6 @@
 
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
-      validateSession();
       loadForumData();
       
       // Close profile menu when clicking outside
@@ -793,23 +791,6 @@
         } catch (e) {
           currentUser = null;
           localStorage.removeItem('forumUser');
-        }
-      }
-    }
-
-    function validateSession() {
-      const sessionStr = localStorage.getItem('forumSession');
-      if (sessionStr) {
-        try {
-          const session = JSON.parse(sessionStr);
-          if (Date.now() - session.timestamp > SESSION_TIMEOUT) {
-            // Session expired
-            localStorage.removeItem('forumUser');
-            localStorage.removeItem('forumSession');
-            currentUser = null;
-          }
-        } catch (e) {
-          localStorage.removeItem('forumSession');
         }
       }
     }
