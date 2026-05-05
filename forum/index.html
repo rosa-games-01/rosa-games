@@ -609,7 +609,7 @@
 
 <body>
   <div class="forum-container">
-    <a class="back-link" href="/rosa-games">← Back to Home</a>
+    <a class="back-link" href="/">← Back to Home</a>
 
     <div class="forum-header">
       <h1>Community Forum</h1>
@@ -722,9 +722,9 @@
 
   <script>
     // JSONBin configuration
-    //const API_KEY = '';
-    //const BIN_ID = '';
-    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const API_KEY = '$2a$10$KQGNonp3GHvHkZHM77tfD.VklK/1pxWWKpMTP3He/P9bKhQQVQAnm';
+    const BIN_ID = '69f24dd036566621a807ebb6';
+    const API_URL = BIN_ID ? `https://api.jsonbin.io/v3/b/${BIN_ID}` : '';
     const SESSION_TIMEOUT = 20 * 60 * 1000; // 20 minutes in milliseconds
 
     let currentUser = null;
@@ -749,6 +749,12 @@
     // ===== DATA FUNCTIONS =====
     function loadForumData() {
       const container = document.getElementById('posts-container');
+      
+      if (!API_KEY || !BIN_ID) {
+        container.innerHTML = '<div class="no-posts">Forum is not configured yet. Please contact the administrator to set up JSONBin API credentials.</div>';
+        return;
+      }
+
       container.innerHTML = '<div class="loading">Loading forum...</div>';
 
       fetch(API_URL, { headers: { 'X-Master-Key': API_KEY } })
