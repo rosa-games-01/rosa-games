@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="/favicon.png" />
+  <title>Proxy</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #121212;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .proxy-container {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .proxy-header {
+      background: #1e1e1e;
+      padding: 15px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .proxy-header h1 {
+      font-size: 1.5rem;
+      color: #f5f5f5;
+    }
+
+    .back-button {
+      padding: 10px 20px;
+      background: #80cbc4;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+      font-size: 1rem;
+    }
+
+    .back-button:hover {
+      background: #4db6ac;
+      transform: scale(1.05);
+    }
+
+    .back-button:active {
+      transform: scale(0.95);
+    }
+
+    iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="proxy-container">
+    <div class="proxy-header">
+      <h1>Web Proxy</h1>
+      <button class="back-button" onclick="window.location.href='/'">Home</button>
+    </div>
+    <!-- EDIT THE URL BELOW: Change "example.com" to the website you want to display -->
+    <iframe src="https://example.com"></iframe>
+  </div>
+</body>
+
+</html>
