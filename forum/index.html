@@ -760,7 +760,6 @@
         .then(data => {
           allUsers = data.record.users || [];
           allPosts = data.record.posts || [];
-          loadUser();
           updateForumUI();
           displayPosts();
         })
@@ -772,7 +771,7 @@
 
     function saveForumData() {
       const data = { users: allUsers, posts: allPosts };
-      fetch(API_URL, {
+      return fetch(API_URL, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -783,22 +782,8 @@
       .catch(err => console.error('Error saving forum data:', err));
     }
 
-    function loadUser() {
-      const userStr = localStorage.getItem('forumUser');
-      if (userStr) {
-        try {
-          currentUser = JSON.parse(userStr);
-        } catch (e) {
-          currentUser = null;
-          localStorage.removeItem('forumUser');
-        }
-      }
-    }
-
-    function saveUserSession(user) {
+    function setCurrentUser(user) {
       currentUser = user;
-      localStorage.setItem('forumUser', JSON.stringify(user));
-      localStorage.setItem('forumSession', JSON.stringify({ timestamp: Date.now() }));
     }
 
     function updateForumUI() {
@@ -830,8 +815,6 @@
     }
 
     function logoutForum() {
-      localStorage.removeItem('forumUser');
-      localStorage.removeItem('forumSession');
       currentUser = null;
       closeProfileMenu();
       updateForumUI();
@@ -900,10 +883,9 @@
         return;
       }
 
-      saveUserSession(user);
+      setCurrentUser(user);
       updateForumUI();
       closeAuthModal();
-      loadForumData();
     }
 
     function register() {
@@ -945,11 +927,11 @@
       };
 
       allUsers.push(newUser);
-      saveForumData();
-      saveUserSession(newUser);
-      updateForumUI();
-      closeAuthModal();
-      loadForumData();
+      saveForumData().then(() => {
+        setCurrentUser(newUser);
+        updateForumUI();
+        closeAuthModal();
+      });
     }
 
     // ===== POST FUNCTIONS =====
